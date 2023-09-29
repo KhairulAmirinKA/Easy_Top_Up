@@ -15,8 +15,12 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText editTextPhone;
-    private Button btnDial;
+    //telco provider code
+    public static final String CELCOM = "*122*";
+    public static final String HOTLINK= "*111";
+
+    private EditText editTextPin;
+    private Button btnDial, btnClear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,53 +37,36 @@ public class MainActivity extends AppCompatActivity {
         btnDial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                String phone= "*122*"+ editTextPhone.getText().toString() +"#";
-
-                Log.d("PHONE", phone);
-                Toast.makeText(MainActivity.this, "phone: "+ phone, Toast.LENGTH_SHORT).show();
-
-                if (!phone.isEmpty()) {
-
-                    //phone +="#";
-                    //phone= "*122#"+ phone;
-
-                    // Create an Intent to initiate the phone call
-                    Intent intent = new Intent(Intent.ACTION_DIAL);
-
-                    intent.setData(Uri.parse("tel:" + phone));
-
-                    // Check if there's an activity to handle the Intent before starting it
-                    if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivity(intent);
-                    } else {
-                        // Handle the case where there's no activity to handle the phone call
-                        // (e.g., on devices without a dialer app)
-                    }
-                } else {
-                    // Handle the case where the phone number is empty
-                }
+                dialTopUp(CELCOM);
             }
         });
 
+
+        //clear edit text
+        btnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editTextPin.getText().clear();
+            }
+        });
 
 
     }
 
 
-
+    //find view by id
     private void initViews(){
-        editTextPhone= findViewById(R.id.editTextPhone);
+        editTextPin = findViewById(R.id.editTextPin);
 
         btnDial= findViewById(R.id.btnDial);
-
+        btnClear= findViewById(R.id.btnClear);
     }
 
 
     //handle edit top up pin
     private void handleTopUpPin(){
 
-        editTextPhone.addTextChangedListener(new TextWatcher() {
+        editTextPin.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
 
@@ -110,19 +97,55 @@ public class MainActivity extends AppCompatActivity {
 
                 //update edit text with the formatted value
                 //prevent triggering the edit text while updating
-                editTextPhone.removeTextChangedListener(this);
+                editTextPin.removeTextChangedListener(this);
 
                 //set text
-                editTextPhone.setText( formattedPin.toString() );
+                editTextPin.setText( formattedPin.toString() );
 
                 //set cursor to the end. otherwise, the cursor appears in front
-                editTextPhone.setSelection( formattedPin.length() );
+                editTextPin.setSelection( formattedPin.length() );
 
                 //reattach Text Watcher. otherwise, the digits are not separated
-                editTextPhone.addTextChangedListener(this);
+                editTextPin.addTextChangedListener(this);
 
             }
         });
-    }//handle
+    }//handle top up pin
+
+    //dial the top up
+    private void dialTopUp(String telcoProvider){
+
+        //get from edit text
+       String topUpPin= editTextPin.getText().toString();
+
+       //remove except digits
+        topUpPin= topUpPin.replaceAll("\\D","");
+
+       //only works for 16 digits pin
+        if (topUpPin.length()==16){
+
+            String pinToDial= telcoProvider + topUpPin+ "#";
+
+           // Toast.makeText(this, "works", Toast.LENGTH_SHORT).show();
+
+            //create intent to dial
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:"+ pinToDial) );
+
+            //check if there is activity to handle intent
+            if (intent.resolveActivity( getPackageManager() ) != null    ){
+                startActivity(intent);
+            }
+            else {
+                Toast.makeText(this, "Wait for a moment", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+        else { //handles pin
+            Toast.makeText(this, "Please enter the correct pin", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
 }

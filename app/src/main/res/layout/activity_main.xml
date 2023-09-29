@@ -20,7 +20,7 @@
             android:text="Easy Top Up" />
 
         <EditText
-            android:id="@+id/editTextPhone"
+            android:id="@+id/editTextPin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -32,18 +32,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:layout_below="@+id/editTextPhone"
+            android:layout_below="@+id/editTextPin"
             android:id="@+id/btnDial"
             android:text="Dial"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/editTextPhone"
+            android:layout_below="@+id/editTextPin"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_toRightOf="@+id/btnDial"
             android:backgroundTint="#BA1225"
+            android:id="@+id/btnClear"
             android:text="Clear" />
 
     </RelativeLayout>
